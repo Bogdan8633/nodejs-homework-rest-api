@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
 
 const { User } = require("../../models/user");
 
@@ -18,9 +19,16 @@ const register = async (req, res) => {
   //2 перед тим як зберегти пароль в базу ми його хешуємо для того щоб він візуально був прихований (захешований)
   const hashPassword = await bcrypt.hash(password, 10);
 
+  //видаємо дефолтну аватарку для користувача який не додав свою особисто
+  const avatarURL = gravatar.url(email);
+
   //1 Якщо в базі немає такого користувача то ми створюємо його
   //2 Записуємо для користувача пароль в захешованому вигляді
-  const result = await User.create({ ...req.body, password: hashPassword });
+  const result = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
 
   //Отримуємо выдповідь з бази про створення нового користувача та повертаємо email новоствореного користувача
   res.status(201).json({
