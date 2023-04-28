@@ -14,6 +14,11 @@ const login = async (req, res) => {
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
+  //Перевіряємо чи пройшов користувач верифікацію ел.пошти
+  if (!user.verify) {
+    throw HttpError(401, "Email not verify");
+  }
+
   //3 порівнюємо пароль який ми передаємо з захешованим паролем який міститься в об'єкті user`а в базі даних
   const passwordCompare = await bcrypt.compare(password, user.password);
   //Якщо паролі не співпадають то викидуємо помилку
